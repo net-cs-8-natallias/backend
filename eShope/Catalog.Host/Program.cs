@@ -1,45 +1,67 @@
+using System.Text.Json;
+using Catalog.Host;
+using StringReader = Catalog.Host.StringReader;
+
+// create server
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// adding controller
 builder.Services.AddControllers();
 
+// app will create each time new instance where are injections 
+//builder.Services.AddScoped<IStringReader, StringReader>();
+// singleton -> app will reuse one instance of class
+builder.Services.AddSingleton<IStringReader, StringReader>();
+
+// create app container
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// use -> middleware/pipeline -> ordered
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// redirection from http to https
+// app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// app.UseAuthorization();
+// app.UseAuthentication();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+// mapping controller
+app.MapControllers();
+
+// 1 way to create middleware
+// not calling another middlewares from pipeline
+// http://localhost:5054/WeatherForecast
+// http://localhost:5054/WeatherForecast/test
+// app.Run(async context =>
+// {
+//     await context.Response.WriteAsync("Hello world");
+// });
+
+// 2 way to create middleware ( with map/delegate )
+// calling another middlewares from pipeline
+// http://localhost:5054/map1
+// app.Map("/map1", HandleMap1);
+// static void HandleMap1(IApplicationBuilder applicationBuilder)
+// {
+//     applicationBuilder.Run(async context =>
+//     {
+//         await context.Response.WriteAsync("Hello world from map");
+//         //await context.Response.WriteAsync(context.Request.ToString());
+//     });
+// }
+
+// 3 way to create middleware ( use )
+// app.Use(async (context, next) =>
+// {
+//     await next.Invoke();
+// });
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
