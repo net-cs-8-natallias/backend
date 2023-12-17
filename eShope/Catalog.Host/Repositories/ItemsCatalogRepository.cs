@@ -19,13 +19,13 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
     public async Task<PaginatedItems<CatalogItem>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalItems = await _dbContext.CatalogItems.LongCountAsync();
-        _logger.LogDebug($"*items-repo* found total items: {totalItems}");
+        _logger.LogDebug($"*{GetType().Name}* found total items: {totalItems}");
         var catalogItems = await _dbContext.CatalogItems
         .OrderBy(c => c.Name)
         .Skip(pageSize * pageIndex)
         .Take(pageSize)
         .ToListAsync();
-        _logger.LogDebug($"*items-repo* return {catalogItems.Count} items");
+        _logger.LogDebug($"*{GetType().Name}* return {catalogItems.Count} items");
         return new PaginatedItems<CatalogItem>
         {
             TotalCount = totalItems,
@@ -38,10 +38,10 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         var item = await _dbContext.CatalogItems.FindAsync(id);
         if (item == null)
         {
-            _logger.LogError($"*items-repo* item with id: {id} does not exist");
+            _logger.LogError($"*{GetType().Name}* item with id: {id} does not exist");
             throw new Exception($"Item with ID: {id} does not exist");
         }
-        _logger.LogDebug($"*items-repo* found item: {item.Id}");
+        _logger.LogDebug($"*{GetType().Name}* found item: {item.Id}");
         return item;
     }
   
@@ -49,7 +49,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
     {
         var item = await _dbContext.CatalogItems.AddAsync(catalogItem);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*items-repo* new item was added: {item.Entity.Id}");
+        _logger.LogDebug($"*{GetType().Name}* new item was added: {item.Entity.Id}");
         return item.Entity.Id;
     }
 
@@ -58,21 +58,21 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         var brand = await _dbContext.CatalogBrands.FindAsync(catalogItem.CatalogBrandId);
         if (brand == null)
         {
-            _logger.LogError($"*items-repo* catalog-brand with brand-id: {catalogItem.CatalogBrandId} does not exist");
+            _logger.LogError($"*{GetType().Name}* catalog-brand with brand-id: {catalogItem.CatalogBrandId} does not exist");
             throw new Exception($"Brand with brand-ID: {catalogItem.CatalogBrandId} does not exist");
         }
 
         var type = await _dbContext.CatalogTypes.FindAsync(catalogItem.CatalogTypeId);
         if (type == null)
         {
-            _logger.LogError($"*items-repo* catalog-type with type-id: {catalogItem.CatalogTypeId} does not exist");
+            _logger.LogError($"*{GetType().Name}* catalog-type with type-id: {catalogItem.CatalogTypeId} does not exist");
             throw new Exception($"Type with type-ID: {catalogItem.CatalogTypeId} does not exist");
         }
 
         var item = await _dbContext.CatalogItems.FindAsync(catalogItem.Id);
         if (item == null)
         {
-            _logger.LogError($"*items-repo* catalog-item with item-id: {catalogItem.Id} does not exist");
+            _logger.LogError($"*{GetType().Name}* catalog-item with item-id: {catalogItem.Id} does not exist");
             throw new Exception($"Item with item-ID: {catalogItem.Id} does not exist");
         }
         item.CatalogBrandId = brand.Id;
@@ -84,7 +84,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         
         item = _dbContext.CatalogItems.Update(item).Entity;
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*items-repo* item: {item.Id} was updated");
+        _logger.LogDebug($"*{GetType().Name}* item: {item.Id} was updated");
         return item;
     }
     
@@ -93,7 +93,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         var item = await FindById(id);
         _dbContext.Remove(item);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*items-repo* item with id: {id} was removed");
+        _logger.LogDebug($"*{GetType().Name}* item with id: {id} was removed");
         return item;
     }
 
@@ -102,7 +102,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         var items = await _dbContext.CatalogItems
             .Where(item => item.CatalogBrand.Brand == brand)
             .ToArrayAsync();
-        _logger.LogDebug($"*items-repo* found {items.Length} items");
+        _logger.LogDebug($"*{GetType().Name}* found {items.Length} items");
         return items;
     }
     
@@ -111,7 +111,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         var items = await _dbContext.CatalogItems
             .Where(item => item.CatalogType.Type == type)
             .ToArrayAsync();
-        _logger.LogDebug($"*items-repo* found {items.Length} items");
+        _logger.LogDebug($"*{GetType().Name}* found {items.Length} items");
         return items;
     }
 }

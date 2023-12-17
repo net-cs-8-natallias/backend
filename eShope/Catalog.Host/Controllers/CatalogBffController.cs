@@ -30,7 +30,7 @@ namespace Catalog.Host.Controllers;
 
 	[HttpGet]
     [ProducesResponseType(typeof(PaginatedItems<CatalogItem>), (int) HttpStatusCode.OK)]
-    public async Task<IActionResult> GetItems(int pageSize, int pageIndex)
+    public async Task<IActionResult> Items(int pageSize, int pageIndex)
     {
         _logger.LogInformation($"*bff-controller* request to get items by page size: {pageSize}, page index: {pageIndex}");
         var catalogItems = await _itemRepository.GetCatalog(pageSize, pageIndex);
@@ -39,58 +39,58 @@ namespace Catalog.Host.Controllers;
     
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedItems<CatalogBrand>), (int) HttpStatusCode.OK)]
-    public async Task<ActionResult> GetBrands(int pageSize, int pageIndex)
+    public async Task<ActionResult> Brands(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*bff-controller* request to get brands by page size: {pageSize}, page index: {pageIndex}");
+        _logger.LogInformation($"*{GetType().Name}* request to get brands by page size: {pageSize}, page index: {pageIndex}");
         var catalogBrands = await _brandRepository.GetCatalog(pageSize, pageIndex);
         return Ok(catalogBrands);
     }
     
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedItems<CatalogType>), (int) HttpStatusCode.OK)]
-    public async Task<ActionResult> GetTypes(int pageSize, int pageIndex)
+    public async Task<ActionResult> Types(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*bff-controller* request to get types by page size: {pageSize}, page index: {pageIndex}");
+        _logger.LogInformation($"*{GetType().Name}* request to get types by page size: {pageSize}, page index: {pageIndex}");
         var catalogTypes = await _typeRepository.GetCatalog(pageSize, pageIndex);
         return Ok(catalogTypes);
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetByItemId(int id)
+    public async Task<ActionResult> Item(int id)
     {
-        _logger.LogInformation($"*bff-controller* request to get item by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
         var item = await _itemRepository.FindById(id);
         return Ok(item);
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetByBrandId(int id)
+    public async Task<ActionResult> Brand(int id)
     {
-        _logger.LogInformation($"*bff-controller* request to get item by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
         var item = await _brandRepository.FindById(id);
         return Ok(item);
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetByTypeId(int id)
+    public async Task<ActionResult> Type(int id)
     {
-        _logger.LogInformation($"*bff-controller* request to get item by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
         var item = await _typeRepository.FindById(id);
         return Ok(item);
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetIteByType(string type)
+    public async Task<ActionResult> GetByType(string type)
     {
-        _logger.LogInformation($"*bff-controller* request to get items by id: {type}");
+        _logger.LogInformation($"*{GetType().Name}* request to get items by id: {type}");
         var items = await _itemRepository.GetItemsByType(type);
         return Ok(items);
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetItemByBrand(string brand)
+    public async Task<ActionResult> GetByBrand(string brand)
     {
-        _logger.LogInformation($"*bff-controller* request to get items by id: {brand}");
+        _logger.LogInformation($"*{GetType().Name}* request to get items by id: {brand}");
         var items = await _itemRepository.GetItemsByBrand(brand);
         return Ok(items);
     }

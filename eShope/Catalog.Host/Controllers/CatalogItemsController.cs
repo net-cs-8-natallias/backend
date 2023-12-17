@@ -21,19 +21,19 @@ public class CatalogItemsController: ControllerBase
         _logger = logger;
     }
     
-    [HttpGet("GetItems")]
+    [HttpGet("items")]
     [ProducesResponseType(typeof(PaginatedItems<CatalogItem>), (int) HttpStatusCode.OK)]
     public async Task<ActionResult> GetItems(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*item-controller* request to get items by page size: {pageSize}, page index: {pageIndex}");
+        _logger.LogInformation($"*{GetType().Name}* request to get items by page size: {pageSize}, page index: {pageIndex}");
         var catalogItems = await _catalogRepository.GetCatalog(pageSize, pageIndex);
         return Ok(catalogItems);
     }
 
-    [HttpGet("GetItemsById/{id}")]
+    [HttpGet("items/{id}")]
     public async Task<ActionResult> GetItemById(int id)
     {
-        _logger.LogInformation($"*item-controller* request to get item by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
         var item = await _catalogRepository.FindById(id);
         return Ok(item);
     }
@@ -41,7 +41,7 @@ public class CatalogItemsController: ControllerBase
     [HttpPost]
     public async Task<ActionResult> AddItem(AddCatalogItemRequest request)
     {
-        _logger.LogInformation("*item-controller* request to add new item");
+        _logger.LogInformation($"*{GetType().Name}* request to add new item");
         var catalogItem = new CatalogItem
         {
             CatalogBrandId = request.CatalogBrandId,
@@ -58,7 +58,7 @@ public class CatalogItemsController: ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdateItem([FromBody]AddCatalogItemRequest request)
     {
-        _logger.LogInformation($"*item-controller* request to update item with id: {request.Id}");
+        _logger.LogInformation($"*{GetType().Name}* request to update item with id: {request.Id}");
         var catalogItem = new CatalogItem
         {
             Id = request.Id,
@@ -76,7 +76,7 @@ public class CatalogItemsController: ControllerBase
     [HttpDelete("item/{id}")]
     public async Task<ActionResult> DeleteItem(int id)
     {
-        _logger.LogDebug($"*item-controller* request to delete item with id: {id}");
+        _logger.LogDebug($"*{GetType().Name}* request to delete item with id: {id}");
         var item = await _catalogRepository.RemoveFromCatalog(id);
         return Ok(item);
     }

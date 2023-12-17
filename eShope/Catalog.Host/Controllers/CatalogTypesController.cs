@@ -21,19 +21,19 @@ public class CatalogTypesController: ControllerBase
         _logger = logger;
     }
     
-    [HttpGet("GetTypes")]
+    [HttpGet("types")]
     [ProducesResponseType(typeof(PaginatedItems<CatalogType>), (int) HttpStatusCode.OK)]
     public async Task<ActionResult> GetTypes(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*types-controller* request to get types by page size: {pageSize}, page index: {pageIndex}");
+        _logger.LogInformation($"*{GetType().Name}* request to get types by page size: {pageSize}, page index: {pageIndex}");
         var catalogTypes = await _catalogRepository.GetCatalog(pageSize, pageIndex);
         return Ok(catalogTypes);
     }
 
-    [HttpGet("GetItemsById/{id}")]
+    [HttpGet("types/{id}")]
     public async Task<ActionResult> GetItemById(int id)
     {
-        _logger.LogInformation($"*types-controller* request to get type by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get type by id: {id}");
         var type = await _catalogRepository.FindById(id);
         return Ok(type);
     }
@@ -41,7 +41,7 @@ public class CatalogTypesController: ControllerBase
     [HttpPost]
     public async Task<ActionResult> AddType(AddCatalogTypeRequest request)
     {
-        _logger.LogInformation("*types-controller* request to add new type");
+        _logger.LogInformation($"*{GetType().Name}* request to add new type");
         var catalogType = new CatalogType
         {
             Type = request.Type
@@ -53,7 +53,7 @@ public class CatalogTypesController: ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdateType([FromBody]AddCatalogTypeRequest request)
     {
-        _logger.LogInformation($"*types-controller* request to update type with id: {request.Id}");
+        _logger.LogInformation($"*{GetType().Name}* request to update type with id: {request.Id}");
         var catalogType = new CatalogType
         {
             Id = request.Id,
@@ -66,7 +66,7 @@ public class CatalogTypesController: ControllerBase
     [HttpDelete("type/{id}")]
     public async Task<ActionResult> DeleteType(int id)
     {
-        _logger.LogDebug($"*types-controller* request to delete item with id: {id}");
+        _logger.LogDebug($"*{GetType().Name}* request to delete item with id: {id}");
         var type = await _catalogRepository.RemoveFromCatalog(id);
         return Ok(type);
     }

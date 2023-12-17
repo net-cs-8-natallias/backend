@@ -21,19 +21,19 @@ public class CatalogBrandController: ControllerBase
         _logger = logger;
     }
     
-    [HttpGet("GetBrands")]
+    [HttpGet("brands")]
     [ProducesResponseType(typeof(PaginatedItems<CatalogBrand>), (int) HttpStatusCode.OK)]
     public async Task<ActionResult> GetBrands(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*brands-controller* request to get brands by page size: {pageSize}, page index: {pageIndex}");
+        _logger.LogInformation($"*{GetType().Name}* request to get brands by page size: {pageSize}, page index: {pageIndex}");
         var catalogBrands = await _catalogRepository.GetCatalog(pageSize, pageIndex);
         return Ok(catalogBrands);
     }
 
-    [HttpGet("GetBrandById/{id}")]
+    [HttpGet("brands/{id}")]
     public async Task<ActionResult> GetBrandById(int id)
     {
-        _logger.LogInformation($"*brands-controller* request to get brand by id: {id}");
+        _logger.LogInformation($"*{GetType().Name}* request to get brand by id: {id}");
         var type = await _catalogRepository.FindById(id);
         return Ok(type);
     }
@@ -41,7 +41,7 @@ public class CatalogBrandController: ControllerBase
     [HttpPost]
     public async Task<ActionResult> AddBrand(AddCatalogBrandRequest request)
     {
-        _logger.LogInformation("*brands-controller* request to add new brand");
+        _logger.LogInformation($"*{GetType().Name}* request to add new brand");
         var catalogBrand = new CatalogBrand
         {
             Brand = request.Brand
@@ -53,7 +53,7 @@ public class CatalogBrandController: ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdateBrand([FromBody]AddCatalogBrandRequest request)
     {
-        _logger.LogInformation($"*brands-controller* request to update brand with id: {request.Id}");
+        _logger.LogInformation($"*{GetType().Name}* request to update brand with id: {request.Id}");
         var catalogBrand = new CatalogBrand
         {
             Id = request.Id,
@@ -66,7 +66,7 @@ public class CatalogBrandController: ControllerBase
     [HttpDelete("brand/{id}")]
     public async Task<ActionResult> DeleteBrande(int id)
     {
-        _logger.LogDebug($"*brands-controller* request to delete brand with id: {id}");
+        _logger.LogDebug($"*{GetType().Name}* request to delete brand with id: {id}");
         var brand = await _catalogRepository.RemoveFromCatalog(id);
         return Ok(brand);
     }
