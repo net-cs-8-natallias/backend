@@ -14,17 +14,19 @@ public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
         _dbContext = dbContext;
         _logger = logger;
     }
-    
+
+    public async Task<List<CatalogBrand>> GetCatalog()
+    {
+        return await _dbContext.CatalogBrands.ToListAsync();
+    }
     public async Task<PaginatedItems<CatalogBrand>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalBrands = await _dbContext.CatalogBrands.LongCountAsync();
-        _logger.LogDebug($"*{GetType().Name}* found total brands: {totalBrands}");
         var catalogBrands = await _dbContext.CatalogBrands
             .OrderBy(c => c.Brand)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        _logger.LogDebug($"*{GetType().Name}* return {catalogBrands.Count} brands");
         return new PaginatedItems<CatalogBrand>
         {
             TotalCount = totalBrands,
@@ -40,7 +42,6 @@ public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
             _logger.LogError($"*{GetType().Name}* brand with id: {id} does not exist");
             throw new Exception($"Brand with ID: {id} does not exist");
         }
-        _logger.LogDebug($"*{GetType().Name}* found brand: {brand.Id}");
         return brand;
     }
 
@@ -48,33 +49,23 @@ public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
     {
         var brand = await _dbContext.CatalogBrands.AddAsync(catalogBrand);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*{GetType().Name}* new brand was added: {brand.Entity.Id}");
         return brand.Entity.Id;
     }
 
     public async Task<CatalogBrand> UpdateInCatalog(CatalogBrand catalogBrand)
     {
-        var brand = await _dbContext.CatalogBrands.FindAsync(catalogBrand.Id);
-        if (brand == null)
-        {
-            _logger.LogError($"*{GetType().Name}* catalog-brand with brand-id: {catalogBrand.Id} does not exist");
-            throw new Exception($"Brand with brand-ID: {catalogBrand.Id} does not exist");
-        }
-
+        var brand = await FindById(catalogBrand.Id);
         brand.Brand = catalogBrand.Brand;
-
         brand = _dbContext.CatalogBrands.Update(brand).Entity;
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*{GetType().Name}* brand: {brand.Id} was updated");
         return brand;
     }
 
     public async Task<CatalogBrand> RemoveFromCatalog(int id)
     {
         var brand = await FindById(id);
-        _dbContext.Remove(brand);
+        _dbContext.CatalogBrands.Remove(brand);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*{GetType().Name}* brand with id: {id} was removed");
         return brand;
     }
 }

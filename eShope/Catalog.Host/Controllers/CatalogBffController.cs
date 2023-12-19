@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Repositories;
+using Catalog.Host.Services.Interfaces;
 using Infrastructure;
 
 namespace Catalog.Host.Controllers;
@@ -12,20 +13,14 @@ namespace Catalog.Host.Controllers;
  public class CatalogBffController : ControllerBase
  {
      private readonly ILogger<CatalogBffController> _logger;
-     private readonly IItemsCatalogRepository _itemRepository;
-     private readonly ICatalogRepository<CatalogBrand> _brandRepository;
-     private readonly ICatalogRepository<CatalogType> _typeRepository;
+     private readonly IBffService _service;
      
      public CatalogBffController(
          ILogger<CatalogBffController> logger,
-         IItemsCatalogRepository itemRepository, 
-         ICatalogRepository<CatalogBrand> brandRepository, 
-         ICatalogRepository<CatalogType> typeRepository)
+         IBffService service)
      {
          _logger = logger;
-         _itemRepository = itemRepository;
-         _brandRepository = brandRepository;
-         _typeRepository = typeRepository;
+         _service = service;
      }
 
 	[HttpGet]
@@ -33,7 +28,7 @@ namespace Catalog.Host.Controllers;
     public async Task<IActionResult> Items(int pageSize, int pageIndex)
     {
         _logger.LogInformation($"*bff-controller* request to get items by page size: {pageSize}, page index: {pageIndex}");
-        var catalogItems = await _itemRepository.GetCatalog(pageSize, pageIndex);
+        var catalogItems = await _service.GetItems(pageSize, pageIndex);
         return Ok(catalogItems);
     }
     
@@ -42,7 +37,7 @@ namespace Catalog.Host.Controllers;
     public async Task<ActionResult> Brands(int pageSize, int pageIndex)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get brands by page size: {pageSize}, page index: {pageIndex}");
-        var catalogBrands = await _brandRepository.GetCatalog(pageSize, pageIndex);
+        var catalogBrands = await _service.GetBrands(pageSize, pageIndex);
         return Ok(catalogBrands);
     }
     
@@ -51,7 +46,7 @@ namespace Catalog.Host.Controllers;
     public async Task<ActionResult> Types(int pageSize, int pageIndex)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get types by page size: {pageSize}, page index: {pageIndex}");
-        var catalogTypes = await _typeRepository.GetCatalog(pageSize, pageIndex);
+        var catalogTypes = await _service.GetTypes(pageSize, pageIndex);
         return Ok(catalogTypes);
     }
 
@@ -59,7 +54,7 @@ namespace Catalog.Host.Controllers;
     public async Task<ActionResult> Item(int id)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
-        var item = await _itemRepository.FindById(id);
+        var item = await _service.GetItem(id);
         return Ok(item);
     }
     
@@ -67,7 +62,7 @@ namespace Catalog.Host.Controllers;
     public async Task<ActionResult> Brand(int id)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
-        var item = await _brandRepository.FindById(id);
+        var item = await _service.GetBrand(id);
         return Ok(item);
     }
     
@@ -75,23 +70,23 @@ namespace Catalog.Host.Controllers;
     public async Task<ActionResult> Type(int id)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
-        var item = await _typeRepository.FindById(id);
+        var item = await _service.GetType(id);
         return Ok(item);
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetByType(string type)
+    public async Task<ActionResult> GetType([FromQuery] string type)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get items by id: {type}");
-        var items = await _itemRepository.GetItemsByType(type);
+        var items = await _service.GetItemByType(type);
         return Ok(items);
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetByBrand(string brand)
+    public async Task<ActionResult> GetBrand([FromQuery] string brand)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get items by id: {brand}");
-        var items = await _itemRepository.GetItemsByBrand(brand);
+        var items = await _service.GetItemByBrand(brand);
         return Ok(items);
     }
     

@@ -3,6 +3,8 @@ using Catalog.Host.Configurations;
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Repositories;
+using Catalog.Host.Services;
+using Catalog.Host.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -25,6 +27,10 @@ builder.Services.AddTransient<ICatalogRepository<CatalogItem>, ItemsCatalogRepos
 builder.Services.AddTransient<ICatalogRepository<CatalogType>, TypesCatalogRepository>();
 builder.Services.AddTransient<ICatalogRepository<CatalogBrand>, BrandsCatalogRepository>();
 builder.Services.AddTransient<IItemsCatalogRepository, ItemsCatalogRepository>();
+builder.Services.AddTransient<ICatalogService<CatalogItem>, CatalogItemService>();
+builder.Services.AddTransient<ICatalogService<CatalogType>, CatalogTypeService>();
+builder.Services.AddTransient<ICatalogService<CatalogBrand>, CatalogBrandService>();
+builder.Services.AddTransient<IBffService, BffService>();
 
 var app = builder.Build();
 

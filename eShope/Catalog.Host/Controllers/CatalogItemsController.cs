@@ -1,45 +1,42 @@
-using System.Net;
-using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Models.Requests;
-using Catalog.Host.Repositories;
+using Catalog.Host.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Host.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("items")]
 public class CatalogItemsController: ControllerBase
 {
-    private readonly ICatalogRepository<CatalogItem> _catalogRepository;
+    private readonly ICatalogService<CatalogItem> _service;
     private  readonly ILogger<CatalogItemsController> _logger;
     
-    public CatalogItemsController(ICatalogRepository<CatalogItem> catalogRepository, 
+    public CatalogItemsController(ICatalogService<CatalogItem> service, 
         ILogger<CatalogItemsController> logger)
     {
-        _catalogRepository = catalogRepository;
+        _service = service;
         _logger = logger;
     }
     
-    [HttpGet("items")]
-    [ProducesResponseType(typeof(PaginatedItems<CatalogItem>), (int) HttpStatusCode.OK)]
-    public async Task<ActionResult> GetItems(int pageSize, int pageIndex)
+    [HttpGet]
+    public async Task<ActionResult> Items(int pageSize, int pageIndex)
     {
-        _logger.LogInformation($"*{GetType().Name}* request to get items by page size: {pageSize}, page index: {pageIndex}");
-        var catalogItems = await _catalogRepository.GetCatalog(pageSize, pageIndex);
+        _logger.LogInformation($"*{GetType().Name}* request to get all items");
+        var catalogItems = await _service.GetCatalog();
         return Ok(catalogItems);
     }
 
-    [HttpGet("items/{id}")]
-    public async Task<ActionResult> GetItemById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult> Item(int id)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get item by id: {id}");
-        var item = await _catalogRepository.FindById(id);
+        var item = await _service.FindById(id);
         return Ok(item);
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddItem(AddCatalogItemRequest request)
+    public async Task<ActionResult> Add(AddCatalogItemRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to add new item");
         var catalogItem = new CatalogItem
@@ -51,12 +48,12 @@ public class CatalogItemsController: ControllerBase
             PictureFileName = request.PictureFileName, 
             Price = request.Price
         };
-        var id = await _catalogRepository.AddToCatalog(catalogItem);
+        var id = await _service.AddToCatalog(catalogItem);
         return Ok(id);
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateItem([FromBody]AddCatalogItemRequest request)
+    public async Task<ActionResult> Update([FromBody]AddCatalogItemRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to update item with id: {request.Id}");
         var catalogItem = new CatalogItem
@@ -69,15 +66,15 @@ public class CatalogItemsController: ControllerBase
             PictureFileName = request.PictureFileName, 
             Price = request.Price
         };
-        var item = await _catalogRepository.UpdateInCatalog(catalogItem);
+        var item = await _service.UpdateInCatalog(catalogItem);
         return Ok(item);
     }
 
-    [HttpDelete("item/{id}")]
-    public async Task<ActionResult> DeleteItem(int id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
     {
         _logger.LogDebug($"*{GetType().Name}* request to delete item with id: {id}");
-        var item = await _catalogRepository.RemoveFromCatalog(id);
+        var item = await _service.RemoveFromCatalog(id);
         return Ok(item);
     }
 }

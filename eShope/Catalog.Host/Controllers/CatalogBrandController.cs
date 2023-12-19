@@ -1,57 +1,54 @@
-using System.Net;
-using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Models.Requests;
-using Catalog.Host.Repositories;
+using Catalog.Host.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Host.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("brands")]
 public class CatalogBrandController: ControllerBase
 {
-    private readonly ICatalogRepository<CatalogBrand> _catalogRepository;
+    private readonly ICatalogService<CatalogBrand> _service;
     private  readonly ILogger<CatalogBrandController> _logger;
     
-    public CatalogBrandController(ICatalogRepository<CatalogBrand> catalogRepository, 
+    public CatalogBrandController(ICatalogService<CatalogBrand> service, 
         ILogger<CatalogBrandController> logger)
     {
-        _catalogRepository = catalogRepository;
+        _service = service;
         _logger = logger;
     }
     
-    [HttpGet("brands")]
-    [ProducesResponseType(typeof(PaginatedItems<CatalogBrand>), (int) HttpStatusCode.OK)]
-    public async Task<ActionResult> GetBrands(int pageSize, int pageIndex)
+    [HttpGet()]
+    public async Task<ActionResult> Brands()
     {
-        _logger.LogInformation($"*{GetType().Name}* request to get brands by page size: {pageSize}, page index: {pageIndex}");
-        var catalogBrands = await _catalogRepository.GetCatalog(pageSize, pageIndex);
+        _logger.LogInformation($"*{GetType().Name}* request to get all brands");
+        var catalogBrands = await _service.GetCatalog();
         return Ok(catalogBrands);
     }
 
-    [HttpGet("brands/{id}")]
-    public async Task<ActionResult> GetBrandById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult> Brand(int id)
     {
         _logger.LogInformation($"*{GetType().Name}* request to get brand by id: {id}");
-        var type = await _catalogRepository.FindById(id);
+        var type = await _service.FindById(id);
         return Ok(type);
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddBrand(AddCatalogBrandRequest request)
+    public async Task<ActionResult> Add(AddCatalogBrandRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to add new brand");
         var catalogBrand = new CatalogBrand
         {
             Brand = request.Brand
         };
-        var id = await _catalogRepository.AddToCatalog(catalogBrand);
+        var id = await _service.AddToCatalog(catalogBrand);
         return Ok(id);
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateBrand([FromBody]AddCatalogBrandRequest request)
+    public async Task<ActionResult> Update([FromBody]AddCatalogBrandRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to update brand with id: {request.Id}");
         var catalogBrand = new CatalogBrand
@@ -59,15 +56,15 @@ public class CatalogBrandController: ControllerBase
             Id = request.Id,
             Brand = request.Brand
         };
-        var brand = await _catalogRepository.UpdateInCatalog(catalogBrand);
+        var brand = await _service.UpdateInCatalog(catalogBrand);
         return Ok(brand);
     }
 
-    [HttpDelete("brand/{id}")]
-    public async Task<ActionResult> DeleteBrande(int id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
     {
         _logger.LogDebug($"*{GetType().Name}* request to delete brand with id: {id}");
-        var brand = await _catalogRepository.RemoveFromCatalog(id);
+        var brand = await _service.RemoveFromCatalog(id);
         return Ok(brand);
     }
 }
