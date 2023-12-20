@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class TypesCatalogRepository: ICatalogRepository<CatalogType>
+public class TypesCatalogRepository : ICatalogRepository<CatalogType>
 {
     private readonly ApplicationDbContext _dbContext;
-    private  readonly ILogger<TypesCatalogRepository> _logger;
+    private readonly ILogger<TypesCatalogRepository> _logger;
+
     public TypesCatalogRepository(ApplicationDbContext dbContext,
         ILogger<TypesCatalogRepository> logger)
     {
@@ -19,14 +20,23 @@ public class TypesCatalogRepository: ICatalogRepository<CatalogType>
     {
         return await _dbContext.CatalogTypes.ToListAsync();
     }
+
     public async Task<PaginatedItems<CatalogType>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalTypes = await _dbContext.CatalogTypes.LongCountAsync();
+        if (totalTypes == 0)
+        {
+            throw new Exception("No types was found");
+        }
         var catalogTypes = await _dbContext.CatalogTypes
             .OrderBy(c => c.Type)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
+        if (catalogTypes.Count == 0)
+        {
+            throw new Exception($"Types by page size: {pageSize}, page index: {pageIndex} was not found");
+        }
         return new PaginatedItems<CatalogType>
         {
             TotalCount = totalTypes,
@@ -42,6 +52,7 @@ public class TypesCatalogRepository: ICatalogRepository<CatalogType>
             _logger.LogError($"*{GetType().Name}* type with id: {id} does not exist");
             throw new Exception($"Type with ID: {id} does not exist");
         }
+
         return type;
     }
 

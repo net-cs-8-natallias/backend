@@ -4,18 +4,18 @@ using Catalog.Host.Services.Interfaces;
 
 namespace Catalog.Host.Services;
 
-public class CatalogTypeService: ICatalogService<CatalogType>
+public class CatalogTypeService : ICatalogService<CatalogType>
 {
-    private  readonly ILogger<CatalogTypeService> _logger;
+    private readonly ILogger<CatalogTypeService> _logger;
     private readonly ICatalogRepository<CatalogType> _repository;
 
-    public CatalogTypeService(ILogger<CatalogTypeService> logger, 
+    public CatalogTypeService(ILogger<CatalogTypeService> logger,
         ICatalogRepository<CatalogType> repository)
     {
         _logger = logger;
         _repository = repository;
     }
-    
+
     public async Task<List<CatalogType>> GetCatalog()
     {
         var types = await _repository.GetCatalog();
@@ -26,7 +26,7 @@ public class CatalogTypeService: ICatalogService<CatalogType>
     public async Task<CatalogType> FindById(int id)
     {
         var type = await _repository.FindById(id);
-        _logger.LogDebug($"*{GetType().Name}* found type {type.ToString()}");
+        _logger.LogDebug($"*{GetType().Name}* found type {type}");
         return type;
     }
 

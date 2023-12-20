@@ -7,18 +7,18 @@ namespace Catalog.Host.Controllers;
 
 [ApiController]
 [Route("types")]
-public class CatalogTypesController: ControllerBase
+public class CatalogTypesController : ControllerBase
 {
+    private readonly ILogger<CatalogTypesController> _logger;
     private readonly ICatalogService<CatalogType> _service;
-    private  readonly ILogger<CatalogTypesController> _logger;
-    
-    public CatalogTypesController(ICatalogService<CatalogType> service, 
+
+    public CatalogTypesController(ICatalogService<CatalogType> service,
         ILogger<CatalogTypesController> logger)
     {
         _service = service;
         _logger = logger;
     }
-    
+
     [HttpGet]
     public async Task<ActionResult> Types()
     {
@@ -48,7 +48,7 @@ public class CatalogTypesController: ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody]AddCatalogTypeRequest request)
+    public async Task<ActionResult> Update([FromBody] AddCatalogTypeRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to update type with id: {request.Id}");
         var catalogType = new CatalogType

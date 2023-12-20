@@ -7,18 +7,18 @@ namespace Catalog.Host.Controllers;
 
 [ApiController]
 [Route("items")]
-public class CatalogItemsController: ControllerBase
+public class CatalogItemsController : ControllerBase
 {
+    private readonly ILogger<CatalogItemsController> _logger;
     private readonly ICatalogService<CatalogItem> _service;
-    private  readonly ILogger<CatalogItemsController> _logger;
-    
-    public CatalogItemsController(ICatalogService<CatalogItem> service, 
+
+    public CatalogItemsController(ICatalogService<CatalogItem> service,
         ILogger<CatalogItemsController> logger)
     {
         _service = service;
         _logger = logger;
     }
-    
+
     [HttpGet]
     public async Task<ActionResult> Items(int pageSize, int pageIndex)
     {
@@ -45,7 +45,7 @@ public class CatalogItemsController: ControllerBase
             CatalogTypeId = request.CatalogTypeId,
             Description = request.Description,
             Name = request.Name,
-            PictureFileName = request.PictureFileName, 
+            PictureFileName = request.PictureFileName,
             Price = request.Price
         };
         var id = await _service.AddToCatalog(catalogItem);
@@ -53,7 +53,7 @@ public class CatalogItemsController: ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody]AddCatalogItemRequest request)
+    public async Task<ActionResult> Update([FromBody] AddCatalogItemRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to update item with id: {request.Id}");
         var catalogItem = new CatalogItem
@@ -63,7 +63,7 @@ public class CatalogItemsController: ControllerBase
             CatalogTypeId = request.CatalogTypeId,
             Description = request.Description,
             Name = request.Name,
-            PictureFileName = request.PictureFileName, 
+            PictureFileName = request.PictureFileName,
             Price = request.Price
         };
         var item = await _service.UpdateInCatalog(catalogItem);

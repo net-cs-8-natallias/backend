@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
+public class BrandsCatalogRepository : ICatalogRepository<CatalogBrand>
 {
     private readonly ApplicationDbContext _dbContext;
-    private  readonly ILogger<BrandsCatalogRepository> _logger;
+    private readonly ILogger<BrandsCatalogRepository> _logger;
+
     public BrandsCatalogRepository(ApplicationDbContext dbContext,
         ILogger<BrandsCatalogRepository> logger)
     {
@@ -19,14 +20,23 @@ public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
     {
         return await _dbContext.CatalogBrands.ToListAsync();
     }
+
     public async Task<PaginatedItems<CatalogBrand>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalBrands = await _dbContext.CatalogBrands.LongCountAsync();
+        if (totalBrands == 0)
+        {
+            throw new Exception("No brands was found");
+        }
         var catalogBrands = await _dbContext.CatalogBrands
             .OrderBy(c => c.Brand)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
+        if (catalogBrands.Count == 0)
+        {
+            throw new Exception($"Btands by page size: {pageSize}, page index: {pageIndex} was not found");
+        }
         return new PaginatedItems<CatalogBrand>
         {
             TotalCount = totalBrands,
@@ -42,6 +52,7 @@ public class BrandsCatalogRepository: ICatalogRepository<CatalogBrand>
             _logger.LogError($"*{GetType().Name}* brand with id: {id} does not exist");
             throw new Exception($"Brand with ID: {id} does not exist");
         }
+
         return brand;
     }
 

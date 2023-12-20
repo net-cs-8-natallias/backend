@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository<CatalogItem>
+public class ItemsCatalogRepository : IItemsCatalogRepository //ICatalogRepository<CatalogItem>
 {
-
     private readonly ApplicationDbContext _dbContext;
-    private  readonly ILogger<ItemsCatalogRepository> _logger;
+    private readonly ILogger<ItemsCatalogRepository> _logger;
+
     public ItemsCatalogRepository(ApplicationDbContext dbContext,
         ILogger<ItemsCatalogRepository> logger)
     {
@@ -20,15 +20,23 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
     {
         return await _dbContext.CatalogItems.ToListAsync();
     }
-    
+
     public async Task<PaginatedItems<CatalogItem>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalItems = await _dbContext.CatalogItems.LongCountAsync();
+        if (totalItems == 0)
+        {
+            throw new Exception("No items was found");
+        }
         var catalogItems = await _dbContext.CatalogItems
-        .OrderBy(c => c.Name)
-        .Skip(pageSize * pageIndex)
-        .Take(pageSize)
-        .ToListAsync();
+            .OrderBy(c => c.Name)
+            .Skip(pageSize * pageIndex)
+            .Take(pageSize)
+            .ToListAsync();
+        if (catalogItems.Count == 0)
+        {
+            throw new Exception($"Items by page size: {pageSize}, page index: {pageIndex} was not found");
+        }
         return new PaginatedItems<CatalogItem>
         {
             TotalCount = totalItems,
@@ -44,11 +52,14 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
             _logger.LogError($"*{GetType().Name}* item with id: {id} does not exist");
             throw new Exception($"Item with ID: {id} does not exist");
         }
+
         return item;
     }
-  
+
     public async Task<int?> AddToCatalog(CatalogItem catalogItem)
     {
+        var brand = await FindBrand(catalogItem.CatalogBrandId);
+        var type =  await FindType(catalogItem.CatalogTypeId);
         var item = await _dbContext.CatalogItems.AddAsync(catalogItem);
         await _dbContext.SaveChangesAsync();
         return item.Entity.Id;
@@ -56,8 +67,8 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
 
     public async Task<CatalogItem> UpdateInCatalog(CatalogItem catalogItem)
     {
-        var brand = await FindById(catalogItem.CatalogBrandId);
-        var type = await FindById(catalogItem.CatalogTypeId);
+        var brand = await FindBrand(catalogItem.CatalogBrandId);
+        var type =  await FindType(catalogItem.CatalogTypeId);
         var item = await FindById(catalogItem.Id);
 
         item.CatalogBrandId = brand.Id;
@@ -66,12 +77,35 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
         item.Price = catalogItem.Price;
         item.Description = catalogItem.Description;
         item.PictureFileName = catalogItem.PictureFileName;
-        
         item = _dbContext.CatalogItems.Update(item).Entity;
         await _dbContext.SaveChangesAsync();
         return item;
     }
+
+    private async Task<CatalogBrand> FindBrand(int id)
+    {
+        var brand =  await _dbContext.CatalogBrands.FindAsync(id);
+        if (brand == null)
+        {
+            _logger.LogError($"*{GetType().Name}* brand with id: {id} does not exist");
+            throw new Exception($"Brand with ID: {id} does not exist");
+        }
+
+        return brand;
+    }
     
+    private async Task<CatalogType> FindType(int id)
+    {
+        var type =  await _dbContext.CatalogTypes.FindAsync(id);
+        if (type == null)
+        {
+            _logger.LogError($"*{GetType().Name}* type with id: {id} does not exist");
+            throw new Exception($"Type with ID: {id} does not exist");
+        }
+
+        return type;
+    }
+
     public async Task<CatalogItem> RemoveFromCatalog(int id)
     {
         var item = await FindById(id);
@@ -87,7 +121,7 @@ public class ItemsCatalogRepository: IItemsCatalogRepository//ICatalogRepository
             .ToListAsync();
         return items;
     }
-    
+
     public async Task<List<CatalogItem>> GetItemsByType(string type)
     {
         var items = await _dbContext.CatalogItems

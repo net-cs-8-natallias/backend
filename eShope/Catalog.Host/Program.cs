@@ -1,13 +1,13 @@
-
 using Catalog.Host.Configurations;
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Repositories;
 using Catalog.Host.Services;
 using Catalog.Host.Services.Interfaces;
+using Infrastructure.Services;
+using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +23,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<CatalogConfigurations>(configuration);
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseNpgsql(configuration["ConnectionString"]));
+builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
+
 builder.Services.AddTransient<ICatalogRepository<CatalogItem>, ItemsCatalogRepository>();
 builder.Services.AddTransient<ICatalogRepository<CatalogType>, TypesCatalogRepository>();
 builder.Services.AddTransient<ICatalogRepository<CatalogBrand>, BrandsCatalogRepository>();
@@ -51,7 +53,7 @@ IConfiguration GetConfiguration()
 {
     var builder = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", false, true)
         .AddEnvironmentVariables();
 
     return builder.Build();
@@ -60,7 +62,7 @@ IConfiguration GetConfiguration()
 void CreateDbIfNotExists(IHost host)
 {
     using var scope = host.Services.CreateScope();
-    var services = scope.ServiceProvider; 
+    var services = scope.ServiceProvider;
     try
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -71,6 +73,4 @@ void CreateDbIfNotExists(IHost host)
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(e, "An error occured creating DB");
     }
-    
-    
 }

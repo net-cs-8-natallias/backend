@@ -4,18 +4,17 @@ using Catalog.Host.Services.Interfaces;
 
 namespace Catalog.Host.Services;
 
-public class CatalogItemService: ICatalogService<CatalogItem>
+public class CatalogItemService : ICatalogService<CatalogItem>
 {
-    private  readonly ILogger<CatalogItemService> _logger;
+    private readonly ILogger<CatalogItemService> _logger;
     private readonly ICatalogRepository<CatalogItem> _repository;
 
-    public CatalogItemService(ILogger<CatalogItemService> logger, 
+    public CatalogItemService(ILogger<CatalogItemService> logger,
         ICatalogRepository<CatalogItem> repository)
     {
         _logger = logger;
         _repository = repository;
     }
-    
     public async Task<List<CatalogItem>> GetCatalog()
     {
         var items = await _repository.GetCatalog();
@@ -26,7 +25,7 @@ public class CatalogItemService: ICatalogService<CatalogItem>
     public async Task<CatalogItem> FindById(int id)
     {
         var item = await _repository.FindById(id);
-        _logger.LogDebug($"*{GetType().Name}* found item {item.ToString()}");
+        _logger.LogDebug($"*{GetType().Name}* found item {item}");
         return item;
     }
 

@@ -7,19 +7,19 @@ namespace Catalog.Host.Controllers;
 
 [ApiController]
 [Route("brands")]
-public class CatalogBrandController: ControllerBase
+public class CatalogBrandController : ControllerBase
 {
+    private readonly ILogger<CatalogBrandController> _logger;
     private readonly ICatalogService<CatalogBrand> _service;
-    private  readonly ILogger<CatalogBrandController> _logger;
-    
-    public CatalogBrandController(ICatalogService<CatalogBrand> service, 
+
+    public CatalogBrandController(ICatalogService<CatalogBrand> service,
         ILogger<CatalogBrandController> logger)
     {
         _service = service;
         _logger = logger;
     }
-    
-    [HttpGet()]
+
+    [HttpGet]
     public async Task<ActionResult> Brands()
     {
         _logger.LogInformation($"*{GetType().Name}* request to get all brands");
@@ -48,7 +48,7 @@ public class CatalogBrandController: ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody]AddCatalogBrandRequest request)
+    public async Task<ActionResult> Update([FromBody] AddCatalogBrandRequest request)
     {
         _logger.LogInformation($"*{GetType().Name}* request to update brand with id: {request.Id}");
         var catalogBrand = new CatalogBrand

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Host.Data.EntityConfiguration;
 
-public class CatalogItemEntityTypeConfiguration: IEntityTypeConfiguration<CatalogItem>
+public class CatalogItemEntityTypeConfiguration : IEntityTypeConfiguration<CatalogItem>
 {
     public void Configure(EntityTypeBuilder<CatalogItem> builder)
     {
@@ -14,24 +14,22 @@ public class CatalogItemEntityTypeConfiguration: IEntityTypeConfiguration<Catalo
             .UseHiLo("catalog_item_hilo")
             .IsRequired();
 
-        builder.Property((catalogItem => catalogItem.Name))
-            .IsRequired(true)
+        builder.Property(catalogItem => catalogItem.Name)
+            .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property((catalogItem => catalogItem.Price))
+        builder.Property(catalogItem => catalogItem.Price)
             .IsRequired();
 
-        builder.Property((catalogItem => catalogItem.PictureFileName))
+        builder.Property(catalogItem => catalogItem.PictureFileName)
             .IsRequired(false);
 
         builder.HasOne(catalogItem => catalogItem.CatalogBrand)
             .WithMany()
             .HasForeignKey(catalogItem => catalogItem.CatalogBrandId);
-        
+
         builder.HasOne(catalogItem => catalogItem.CatalogType)
             .WithMany()
             .HasForeignKey(catalogItem => catalogItem.CatalogTypeId);
-        
-
     }
 }

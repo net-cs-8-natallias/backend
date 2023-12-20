@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Host.Data.EntityConfiguration;
 
-public class CatalogTypeEntityTypeConfiguration: IEntityTypeConfiguration<CatalogType>
+public class CatalogTypeEntityTypeConfiguration : IEntityTypeConfiguration<CatalogType>
 {
     public void Configure(EntityTypeBuilder<CatalogType> builder)
     {
@@ -14,7 +14,7 @@ public class CatalogTypeEntityTypeConfiguration: IEntityTypeConfiguration<Catalo
             .UseHiLo("catalog_type_hilo")
             .IsRequired();
 
-        builder.Property((catalogType => catalogType.Type))
+        builder.Property(catalogType => catalogType.Type)
             .IsRequired()
             .HasMaxLength(50);
         // builder.Property(catalogBrand => catalogBrand.Type)
