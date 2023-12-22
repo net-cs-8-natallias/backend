@@ -1,4 +1,21 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/nataliastasiukova/.nuget/packages/serilog.sinks.console/5.0.1/lib/net7.0/Serilog.Sinks.Console.dll" /&gt;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=aba99f86_002D3018_002D4e2e_002D9ccb_002D2f1c9e375ed0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="UnitTest1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.UnitTest1&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.CatalogItemServiceTest.AddAsync&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.CatalogItemServiceTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetCatalogItems_Success&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetItemTest_Success&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetItemTest_Failed&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetTypeTest_Success&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetBrandTest_Success&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetBrandTest_Failed&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest.GetTypeTest_Failed&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.BffServiceTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.CatalogTypeServiceTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::BBA5351D-9A23-477A-B24C-873BAD768FF7::net8.0::Catalog.UnitTests.Services.CatalogBrandServiceTest&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -4,27 +4,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class TypesCatalogRepository: ICatalogRepository<CatalogType>
+public class TypesCatalogRepository : ICatalogRepository<CatalogType>
 {
     private readonly ApplicationDbContext _dbContext;
-    private  readonly ILogger<TypesCatalogRepository> _logger;
+    private readonly ILogger<TypesCatalogRepository> _logger;
+
     public TypesCatalogRepository(ApplicationDbContext dbContext,
         ILogger<TypesCatalogRepository> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
     }
-    
+
+    public async Task<List<CatalogType>> GetCatalog()
+    {
+        return await _dbContext.CatalogTypes.ToListAsync();
+    }
+
     public async Task<PaginatedItems<CatalogType>> GetCatalog(int pageSize, int pageIndex)
     {
         var totalTypes = await _dbContext.CatalogTypes.LongCountAsync();
-        _logger.LogDebug($"*types-repo* found total types: {totalTypes}");
+        if (totalTypes == 0)
+        {
+            throw new Exception("No types was found");
+        }
         var catalogTypes = await _dbContext.CatalogTypes
             .OrderBy(c => c.Type)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        _logger.LogDebug($"*types-repo* return {catalogTypes.Count} types");
+        if (catalogTypes.Count == 0)
+        {
+            throw new Exception($"Types by page size: {pageSize}, page index: {pageIndex} was not found");
+        }
         return new PaginatedItems<CatalogType>
         {
             TotalCount = totalTypes,
@@ -37,10 +49,10 @@ public class TypesCatalogRepository: ICatalogRepository<CatalogType>
         var type = await _dbContext.CatalogTypes.FindAsync(id);
         if (type == null)
         {
-            _logger.LogError($"*types-repo* type with id: {id} does not exist");
+            _logger.LogError($"*{GetType().Name}* type with id: {id} does not exist");
             throw new Exception($"Type with ID: {id} does not exist");
         }
-        _logger.LogDebug($"*types-repo* found type: {type.Id}");
+
         return type;
     }
 
@@ -48,33 +60,23 @@ public class TypesCatalogRepository: ICatalogRepository<CatalogType>
     {
         var type = await _dbContext.CatalogTypes.AddAsync(catalogType);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*types-repo* new type was added: {type.Entity.Id}");
         return type.Entity.Id;
     }
 
     public async Task<CatalogType> UpdateInCatalog(CatalogType catalogType)
     {
-        var type = await _dbContext.CatalogTypes.FindAsync(catalogType.Id);
-        if (type == null)
-        {
-            _logger.LogError($"*types-repo* catalog-type with type-id: {catalogType.Id} does not exist");
-            throw new Exception($"Type with type-ID: {catalogType.Id} does not exist");
-        }
-
+        var type = await FindById(catalogType.Id);
         type.Type = catalogType.Type;
-
         type = _dbContext.CatalogTypes.Update(type).Entity;
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*types-repo* type: {type.Id} was updated");
         return type;
     }
 
     public async Task<CatalogType> RemoveFromCatalog(int id)
     {
         var type = await FindById(id);
-        _dbContext.Remove(type);
+        _dbContext.CatalogTypes.Remove(type);
         await _dbContext.SaveChangesAsync();
-        _logger.LogDebug($"*types-repo* type with id: {id} was removed");
         return type;
     }
 }

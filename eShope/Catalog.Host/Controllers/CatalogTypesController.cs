@@ -1,73 +1,70 @@
-using System.Net;
-using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Models.Requests;
-using Catalog.Host.Repositories;
+using Catalog.Host.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Host.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class CatalogTypesController: ControllerBase
+[Route("types")]
+public class CatalogTypesController : ControllerBase
 {
-    private readonly ICatalogRepository<CatalogType> _catalogRepository;
-    private  readonly ILogger<CatalogTypesController> _logger;
-    
-    public CatalogTypesController(ICatalogRepository<CatalogType> catalogRepository, 
+    private readonly ILogger<CatalogTypesController> _logger;
+    private readonly ICatalogService<CatalogType> _service;
+
+    public CatalogTypesController(ICatalogService<CatalogType> service,
         ILogger<CatalogTypesController> logger)
     {
-        _catalogRepository = catalogRepository;
+        _service = service;
         _logger = logger;
     }
-    
-    [HttpGet("GetTypes")]
-    [ProducesResponseType(typeof(PaginatedItems<CatalogType>), (int) HttpStatusCode.OK)]
-    public async Task<ActionResult> GetTypes(int pageSize, int pageIndex)
+
+    [HttpGet]
+    public async Task<ActionResult> Types()
     {
-        _logger.LogInformation($"*types-controller* request to get types by page size: {pageSize}, page index: {pageIndex}");
-        var catalogTypes = await _catalogRepository.GetCatalog(pageSize, pageIndex);
+        _logger.LogInformation($"*{GetType().Name}* request to get all types");
+        var catalogTypes = await _service.GetCatalog();
         return Ok(catalogTypes);
     }
 
-    [HttpGet("GetItemsById/{id}")]
-    public async Task<ActionResult> GetItemById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult> Type(int id)
     {
-        _logger.LogInformation($"*types-controller* request to get type by id: {id}");
-        var type = await _catalogRepository.FindById(id);
+        _logger.LogInformation($"*{GetType().Name}* request to get type by id: {id}");
+        var type = await _service.FindById(id);
         return Ok(type);
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddType(AddCatalogTypeRequest request)
+    public async Task<ActionResult> Add(AddCatalogTypeRequest request)
     {
-        _logger.LogInformation("*types-controller* request to add new type");
+        _logger.LogInformation($"*{GetType().Name}* request to add new type");
         var catalogType = new CatalogType
         {
             Type = request.Type
         };
-        var id = await _catalogRepository.AddToCatalog(catalogType);
+        var id = await _service.AddToCatalog(catalogType);
         return Ok(id);
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateType([FromBody]AddCatalogTypeRequest request)
+    public async Task<ActionResult> Update([FromBody] AddCatalogTypeRequest request)
     {
-        _logger.LogInformation($"*types-controller* request to update type with id: {request.Id}");
+        _logger.LogInformation($"*{GetType().Name}* request to update type with id: {request.Id}");
         var catalogType = new CatalogType
         {
             Id = request.Id,
             Type = request.Type
         };
-        var type = await _catalogRepository.UpdateInCatalog(catalogType);
+        var type = await _service.UpdateInCatalog(catalogType);
         return Ok(type);
     }
 
-    [HttpDelete("type/{id}")]
-    public async Task<ActionResult> DeleteType(int id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
     {
-        _logger.LogDebug($"*types-controller* request to delete item with id: {id}");
-        var type = await _catalogRepository.RemoveFromCatalog(id);
+        _logger.LogDebug($"*{GetType().Name}* request to delete item with id: {id}");
+        var type = await _service.RemoveFromCatalog(id);
         return Ok(type);
     }
 }

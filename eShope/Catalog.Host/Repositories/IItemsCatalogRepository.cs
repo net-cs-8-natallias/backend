@@ -2,8 +2,8 @@ using Catalog.Host.Data.Entities;
 
 namespace Catalog.Host.Repositories;
 
-public interface IItemsCatalogRepository: ICatalogRepository<CatalogItem>
+public interface IItemsCatalogRepository : ICatalogRepository<CatalogItem>
 {
-    Task<CatalogItem[]> GetItemsByBrand(string brand);
-    Task<CatalogItem[]> GetItemsByType(string type);
+    Task<List<CatalogItem>> GetItemsByBrand(string brand);
+    Task<List<CatalogItem>> GetItemsByType(string type);
 }
