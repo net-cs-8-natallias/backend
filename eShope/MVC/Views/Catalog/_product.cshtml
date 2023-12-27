@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MVC.ViewModels.CatalogItem
+
+
+<form>
+    <img class="esh-catalog-thumbnail" src="@Model.PictureFileName" alt="picture-url"/>
+
+    <div class="esh-catalog-name">
+        <span>@Model.Name</span>
+    </div>
+    <div class="esh-catalog-price">
+        <span>@Model.Price.ToString("N2")</span>
+    </div>
+    <input type="hidden" asp-for="@Model.Id" name="id" />
+</form>

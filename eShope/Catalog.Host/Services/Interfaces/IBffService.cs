@@ -5,9 +5,10 @@ namespace Catalog.Host.Services.Interfaces;
 
 public interface IBffService
 {
-    Task<PaginatedItems<CatalogItem>> GetItems(int pageSize, int pageIndex);
-    Task<PaginatedItems<CatalogBrand>> GetBrands(int pageSize, int pageIndex);
-    Task<PaginatedItems<CatalogType>> GetTypes(int pageSize, int pageIndex);
+    Task<PaginatedItems<CatalogItem>> GetItems(int pageSize, int pageIndex, int brand, int type);
+    Task<List<CatalogItem>> GetItems();
+    Task<List<CatalogBrand>> GetBrands();
+    Task<List<CatalogType>> GetTypes();
     Task<CatalogItem> GetItem(int id);
     Task<CatalogBrand> GetBrand(int id);
     Task<CatalogType> GetType(int id);

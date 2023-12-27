@@ -20,30 +20,7 @@ public class TypesCatalogRepository : ICatalogRepository<CatalogType>
     {
         return await _dbContext.CatalogTypes.ToListAsync();
     }
-
-    public async Task<PaginatedItems<CatalogType>> GetCatalog(int pageSize, int pageIndex)
-    {
-        var totalTypes = await _dbContext.CatalogTypes.LongCountAsync();
-        if (totalTypes == 0)
-        {
-            throw new Exception("No types was found");
-        }
-        var catalogTypes = await _dbContext.CatalogTypes
-            .OrderBy(c => c.Type)
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-        if (catalogTypes.Count == 0)
-        {
-            throw new Exception($"Types by page size: {pageSize}, page index: {pageIndex} was not found");
-        }
-        return new PaginatedItems<CatalogType>
-        {
-            TotalCount = totalTypes,
-            Data = catalogTypes
-        };
-    }
-
+    
     public async Task<CatalogType> FindById(int id)
     {
         var type = await _dbContext.CatalogTypes.FindAsync(id);
