@@ -58,7 +58,8 @@ public class BffServiceTest
             TotalCount = testPageCount
         };
         _mapper.Setup(s => s
-            .Map<CatalogItem>(It.IsAny<object>())).Returns(new CatalogItem());
+            .Map<CatalogItem>(It.IsAny<object>())).Returns(new CatalogItem{Name = "Test"});
+
         _itemsRepo.Setup(s => s.GetCatalog(It.Is<int>(i => i == testPageIndex), It.Is<int>(i => i == testPageSize)))
             .ReturnsAsync(
                 new PaginatedItems<CatalogItem>()

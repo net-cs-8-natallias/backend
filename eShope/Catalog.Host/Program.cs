@@ -8,6 +8,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using AutoMapper;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -20,10 +21,23 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program));
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 builder.Services.Configure<CatalogConfigurations>(configuration);
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseNpgsql(configuration["ConnectionString"]));
 builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
+
 
 builder.Services.AddTransient<ICatalogRepository<CatalogItem>, ItemsCatalogRepository>();
 builder.Services.AddTransient<ICatalogRepository<CatalogType>, TypesCatalogRepository>();
@@ -33,6 +47,8 @@ builder.Services.AddTransient<ICatalogService<CatalogItem>, CatalogItemService>(
 builder.Services.AddTransient<ICatalogService<CatalogType>, CatalogTypeService>();
 builder.Services.AddTransient<ICatalogService<CatalogBrand>, CatalogBrandService>();
 builder.Services.AddTransient<IBffService, BffService>();
+
+
 
 var app = builder.Build();
 

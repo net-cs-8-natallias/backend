@@ -27,42 +27,41 @@ public class BffService : IBffService
         _mapper = mapper;
     }
 
-    public async Task<PaginatedItems<CatalogItem>> GetItems(int pageSize, int pageIndex)
+    public async Task<PaginatedItems<CatalogItem>> GetItems(int pageSize, int pageIndex, int brand, int type)
     {
-        var items = await _itemRepository.GetCatalog(pageSize, pageIndex);
-        _logger.LogDebug($"*{GetType().Name}* found {items.TotalCount} items");
+        var items = await _itemRepository.GetCatalog(pageSize, pageIndex, brand, type);
+        _logger.LogDebug($"*{GetType().Name}* found {items.Count} items");
         return new PaginatedItems<CatalogItem>()
         {
-            TotalCount = items.TotalCount,
+            Count = items.Count,
             Data = items.Data.Select(s => _mapper
-                .Map<CatalogItem>(s)).ToList()
+                .Map<CatalogItem>(s)).ToList(),
+            PageIndex = pageIndex,
+            PageSize = pageSize
         };
     }
-
-    public async Task<PaginatedItems<CatalogBrand>> GetBrands(int pageSize, int pageIndex)
+    
+    public async Task<List<CatalogItem>> GetItems()
     {
-        var brands = await _brandRepository.GetCatalog(pageSize, pageIndex);
-        _logger.LogDebug($"*{GetType().Name}* found {brands.TotalCount} brands");
-        return new PaginatedItems<CatalogBrand>()
-        {
-            TotalCount = brands.TotalCount,
-            Data = brands.Data.Select(s => _mapper
-                .Map<CatalogBrand>(s)).ToList()
-        };
+        var items = await _itemRepository.GetCatalog();
+        _logger.LogDebug($"*{GetType().Name}* found {items.Count} items");
+        return items;
     }
-
-    public async Task<PaginatedItems<CatalogType>> GetTypes(int pageSize, int pageIndex)
+    
+    public async Task<List<CatalogBrand>> GetBrands()
     {
-        var types = await _typeRepository.GetCatalog(pageSize, pageIndex);
-        _logger.LogDebug($"*{GetType().Name}* found {types.TotalCount} types");
-        return new PaginatedItems<CatalogType>()
-        {
-            TotalCount = types.TotalCount,
-            Data = types.Data.Select(s => _mapper
-                .Map<CatalogType>(s)).ToList()
-        };
+        var brands = await _brandRepository.GetCatalog();
+        _logger.LogDebug($"*{GetType().Name}* found {brands.Count} brands");
+        return brands;
     }
-
+    
+    public async Task<List<CatalogType>> GetTypes()
+    {
+        var types = await _typeRepository.GetCatalog();
+        _logger.LogDebug($"*{GetType().Name}* found {types.Count} types");
+        return types;
+    }
+    
     public async Task<CatalogItem> GetItem(int id)
     {
         var item = await _itemRepository.FindById(id);

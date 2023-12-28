@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class ItemsCatalogRepository : IItemsCatalogRepository //ICatalogRepository<CatalogItem>
+public class ItemsCatalogRepository : IItemsCatalogRepository 
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<ItemsCatalogRepository> _logger;
@@ -21,25 +21,32 @@ public class ItemsCatalogRepository : IItemsCatalogRepository //ICatalogReposito
         return await _dbContext.CatalogItems.ToListAsync();
     }
 
-    public async Task<PaginatedItems<CatalogItem>> GetCatalog(int pageSize, int pageIndex)
+    public async Task<PaginatedItems<CatalogItem>> GetCatalog(int pageSize, int pageIndex, int brand, int type)
     {
-        var totalItems = await _dbContext.CatalogItems.LongCountAsync();
-        if (totalItems == 0)
+        IQueryable<CatalogItem> query = _dbContext.CatalogItems;
+        if (brand > 0)
         {
-            throw new Exception("No items was found");
+            query = query.Where(w => w.CatalogBrandId == brand);
         }
-        var catalogItems = await _dbContext.CatalogItems
+        
+        if (type > 0)
+        {
+            query = query.Where(w => w.CatalogTypeId == type);
+        }
+
+        var catalogItems = await query
             .OrderBy(c => c.Name)
+            .Include(i => i.CatalogBrand)
+            .Include(i => i.CatalogType)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        if (catalogItems.Count == 0)
-        {
-            throw new Exception($"Items by page size: {pageSize}, page index: {pageIndex} was not found");
-        }
+        
+        var totalItems = await query.LongCountAsync();
+        
         return new PaginatedItems<CatalogItem>
         {
-            TotalCount = totalItems,
+            Count = totalItems,
             Data = catalogItems
         };
     }
