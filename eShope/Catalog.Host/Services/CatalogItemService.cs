@@ -15,6 +15,7 @@ public class CatalogItemService : ICatalogService<CatalogItem>
         _logger = logger;
         _repository = repository;
     }
+
     public async Task<List<CatalogItem>> GetCatalog()
     {
         var items = await _repository.GetCatalog();

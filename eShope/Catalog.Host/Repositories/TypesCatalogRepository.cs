@@ -20,7 +20,7 @@ public class TypesCatalogRepository : ICatalogRepository<CatalogType>
     {
         return await _dbContext.CatalogTypes.ToListAsync();
     }
-    
+
     public async Task<CatalogType> FindById(int id)
     {
         var type = await _dbContext.CatalogTypes.FindAsync(id);

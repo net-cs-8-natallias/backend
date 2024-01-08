@@ -9,7 +9,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5002
-      - ConnectionString=server=host.docker.internal;port=5432;database=catalog;uid=postgres;password=${PASSWORD};
+      - ConnectionString=server=host.docker.internal;port=5432;database=catalog;uid=postgres;password=Nataliia123;
     depends_on:
       - postgres
     ports:
@@ -39,7 +39,7 @@ services:
     image: dpage/pgadmin4
     container_name: lde.pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${EMAIL}
+      PGADMIN_DEFAULT_EMAIL: nstasiukova@gmail.com
       PGADMIN_DEFAULT_PASSWORD: postgres
     depends_on:
       - postgres
@@ -49,7 +49,7 @@ services:
     image: postgres
     container_name: lde.postgres
     environment:
-      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_PASSWORD: Nataliia123
       POSTGRES_DB: catalog
     ports:
       - 5432:5432

@@ -1,5 +1,3 @@
-using Catalog.Host.Data;
-
 namespace Catalog.Host.Repositories;
 
 public interface ICatalogRepository<T>
