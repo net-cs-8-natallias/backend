@@ -11,17 +11,6 @@ Log.Information("Starting up");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-
-    // builder.Services.AddAuthentication("Bearer")
-    //     .AddJwtBearer("Bearer", options =>
-    //     {
-    //         options.Authority = "http://localhost:7001";
-    //         options.RequireHttpsMetadata = false;
-    //         options.TokenValidationParameters = new TokenValidationParameters
-    //         {
-    //             ValidateAudience = false
-    //         };
-    //     });
     
     builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")

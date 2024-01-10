@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Services.Interfaces;
 using MVC.ViewModels.CatalogViewModels;
@@ -16,7 +17,7 @@ public class CatalogController : Controller
         _catalogService = catalogService;
         _logger = logger;
     }
-
+    // [Authorize]
     public async Task<IActionResult> Index(int? itemsPage, int? page, int? brandFilter, int? typeFilter)
     {
         page ??= 0;

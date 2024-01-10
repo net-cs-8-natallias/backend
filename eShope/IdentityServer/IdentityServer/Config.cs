@@ -29,7 +29,7 @@ public static class Config
                 {
                     new Secret("secret".Sha256())
                 },
-                AllowedScopes = {"catalogitem"}
+                AllowedScopes = {"catalogitem"},
             },
             new Client
             {
