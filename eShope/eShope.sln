@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "IdentityServer\IdentityServer\IdentityServer.csproj", "{D2395059-EAAB-477D-85D6-6ED666FEBE38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basket.Host", "Basket.Host\Basket.Host.csproj", "{03E7C390-7554-4EA2-A4C2-F1AC58FAD63B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer2", "IdentityServer2\IdentityServer2\IdentityServer2.csproj", "{E70B0539-F0AB-4C0C-91B2-7BA2C23890D0}"
+EndProject
 
 
 Global
@@ -66,5 +70,13 @@ Global
 		{D2395059-EAAB-477D-85D6-6ED666FEBE38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2395059-EAAB-477D-85D6-6ED666FEBE38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2395059-EAAB-477D-85D6-6ED666FEBE38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03E7C390-7554-4EA2-A4C2-F1AC58FAD63B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03E7C390-7554-4EA2-A4C2-F1AC58FAD63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03E7C390-7554-4EA2-A4C2-F1AC58FAD63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03E7C390-7554-4EA2-A4C2-F1AC58FAD63B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E70B0539-F0AB-4C0C-91B2-7BA2C23890D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E70B0539-F0AB-4C0C-91B2-7BA2C23890D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E70B0539-F0AB-4C0C-91B2-7BA2C23890D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E70B0539-F0AB-4C0C-91B2-7BA2C23890D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -15,7 +15,8 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new []
         {
-            new ApiScope(name: "catalogitem", displayName: "Catalog API")
+            new ApiScope(name: "catalogitem", displayName: "Catalog API"),
+            new ApiScope(name: "basket.item", displayName:"Basket API")
         };
 
     public static IEnumerable<Client> Clients =>
@@ -42,6 +43,30 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile
+                }
+            },
+            new Client
+            {
+                ClientId = "basketswaggerui",
+                ClientName = "Basket Swagger UI",
+                AllowedGrantTypes = GrantTypes.Implicit,
+                AllowAccessTokensViaBrowser = true,
+                ClientSecrets = new List<Secret>{new Secret("secret".Sha256())},
+                RedirectUris = { $"http://localhost:5055/swagger/oauth2-redirect.html" },
+                PostLogoutRedirectUris = { $"http://localhost:5055/swagger/" },
+
+                AllowedScopes =
+                {
+                    "mvc", "basket.item"
+                }
+            },
+            new Client
+            {
+                ClientId = "basket",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
                 }
             }
         };
