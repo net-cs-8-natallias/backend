@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using Basket.Host.Models;
 using Basket.Host.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Basket.Host.Controllers;
 
 [ApiController]
-[Authorize(Policy = "ApiScope")]
+[Authorize(Policy = "basket.basketitem")]
 [Route("api/v1/[controller]/")]
 public class BasketBffController : ControllerBase
 {
@@ -22,20 +23,20 @@ public class BasketBffController : ControllerBase
         _basketService = basketService;
     }
     
-    [HttpPost("add")]
+    [HttpPost("item")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> TestAdd(int itemId)
     {
-        var basketId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+        var basketId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         await _basketService.AddItem(basketId!, itemId);
         return Ok();
     }
 
-    [HttpGet("get")]
+    [HttpGet("items")]
     [ProducesResponseType(typeof(TestGetResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> TestGet()
     {
-        var basketId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+        var basketId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var response = await _basketService.GetItems(basketId!);
         return Ok(response);
     }

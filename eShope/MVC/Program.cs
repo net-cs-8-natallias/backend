@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(options =>
         options.Scope.Add("openid");
         options.Scope.Add("profile");
         options.Scope.Add("mvc");
-        options.Scope.Add("catalogitem");
+        options.Scope.Add("catalog.catalogitem");
     });
 
 

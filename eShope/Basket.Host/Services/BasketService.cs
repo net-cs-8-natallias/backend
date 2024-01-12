@@ -28,6 +28,11 @@ public class BasketService : IBasketService
 
     public async Task<IEnumerable<int>> GetItems(string userId)
     {
-        return _basket[userId];
+        if (_basket.ContainsKey(userId))
+        {
+            return _basket[userId];
+        }
+
+        return new List<int>();
     }
 }

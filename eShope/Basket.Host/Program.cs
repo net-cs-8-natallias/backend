@@ -1,6 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
 using Basket.Host.Services;
 using Basket.Host.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -8,18 +8,31 @@ var configuration = GetConfiguration();
 
 var builder = WebApplication.CreateBuilder(args);
 
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
         options.Authority = "http://localhost:7001";
+        options.Audience = "basket";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidAudiences = new[] { "basket", "http://localhost:5055" }
+            ValidAudiences = new[] { "mvc", "localhost" }
         };
         options.SaveToken = true;
-        
+        options.RefreshOnIssuerKeyNotFound = true;
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnForbidden = context =>
+            {
+                Console.WriteLine($"Forbidden: {context.Response}");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 
@@ -33,6 +46,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "The Basket Service HTTP API"
     });
+    
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -43,6 +57,7 @@ builder.Services.AddSwaggerGen(options =>
             new[] { "basket.item", "mvc" }
         }
     });
+    var authority = configuration["Authorization:Authority"];
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.OAuth2,
@@ -54,15 +69,14 @@ builder.Services.AddSwaggerGen(options =>
                 TokenUrl = new Uri("http://localhost:7001/connect/token"),
                 Scopes = new Dictionary<string, string>
                 {
-                    { "mvc", "Access mvc scope" },
-                    { "website", "Access website scope" },
-                    { "basket.item", "Access basket.item scope" }
+                    { "mvc", "web" },
+                    { "basket.basketitem", "basket" }
                 }
             }
         }
     });
 
-    var authority = configuration["Authorization:Authority"];
+    
     
 });
 
@@ -70,14 +84,14 @@ builder.Services.AddAuthorization(options =>
 {
     configuration.GetSection("Authorization").Bind(options);
 
-    options.AddPolicy("ApiScope", policy =>
+    options.AddPolicy("basket.basketitem", policy =>
         policy.RequireAssertion(context =>
             context.User.HasClaim(claim =>
-                (claim.Type == "scope" && claim.Value == "basket.item") ||
+                (claim.Type == "scope" && claim.Value == "basket.basketitem") ||//"basketitem") ||
                 (claim.Type == "scope" && claim.Value == "mvc"))));
 });
 
-builder.Services.AddTransient<IBasketService, BasketService>();
+builder.Services.AddSingleton<IBasketService, BasketService>();
 
 builder.Services.AddCors(options =>
 {
@@ -97,14 +111,12 @@ app.UseCors("CorsPolicy");
 app.UseSwagger()
     .UseSwaggerUI(setup =>
     {
-        setup.SwaggerEndpoint($"{configuration["PathBase"]}/swagger/v1/swagger.json", "Basket.API V1");
+        setup.SwaggerEndpoint($"http://localhost:5055/swagger/v1/swagger.json", "Basket.API V1");
         setup.OAuthClientId("basketswaggerui");
         setup.OAuthAppName("Basket Swagger UI");
-        setup.OAuth2RedirectUrl("http://localhost:5055/swagger/oauth2-redirect.html");
     });
 
 app.UseRouting();
-
 
 app.UseAuthentication();
 app.UseAuthorization();
