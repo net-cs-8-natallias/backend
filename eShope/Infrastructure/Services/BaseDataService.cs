@@ -1,6 +1,4 @@
 using Infrastructure.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
@@ -18,11 +16,19 @@ public abstract class BaseDataService<T>
         _logger = logger;
     }
 
-    protected Task ExecuteSafeAsync(Func<Task> action, CancellationToken cancellationToken = default) => ExecuteSafeAsync(token => action(), cancellationToken);
+    protected Task ExecuteSafeAsync(Func<Task> action, CancellationToken cancellationToken = default)
+    {
+        return ExecuteSafeAsync(token => action(), cancellationToken);
+    }
 
-    protected Task<TResult> ExecuteSafeAsync<TResult>(Func<Task<TResult>> action, CancellationToken cancellationToken = default) => ExecuteSafeAsync(token => action(), cancellationToken);
+    protected Task<TResult> ExecuteSafeAsync<TResult>(Func<Task<TResult>> action,
+        CancellationToken cancellationToken = default)
+    {
+        return ExecuteSafeAsync(token => action(), cancellationToken);
+    }
 
-    private async Task ExecuteSafeAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
+    private async Task ExecuteSafeAsync(Func<CancellationToken, Task> action,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _dbContextWrapper.BeginTransactionAsync(cancellationToken);
 
@@ -35,11 +41,12 @@ public abstract class BaseDataService<T>
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, $"transaction is rollbacked");
+            _logger.LogError(ex, "transaction is rollbacked");
         }
     }
 
-    private async Task<TResult> ExecuteSafeAsync<TResult>(Func<CancellationToken, Task<TResult>> action, CancellationToken cancellationToken = default)
+    private async Task<TResult> ExecuteSafeAsync<TResult>(Func<CancellationToken, Task<TResult>> action,
+        CancellationToken cancellationToken = default)
     {
         await using var transaction = await _dbContextWrapper.BeginTransactionAsync(cancellationToken);
 
@@ -54,9 +61,9 @@ public abstract class BaseDataService<T>
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, $"transaction is rollbacked");
+            _logger.LogError(ex, "transaction is rollbacked");
         }
 
-        return default(TResult) !;
+        return default !;
     }
 }

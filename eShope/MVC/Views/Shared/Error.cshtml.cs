@@ -6,6 +6,5 @@ public class Error : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

@@ -4,11 +4,12 @@ using Catalog.Host.Data.Entities;
 using Catalog.Host.Repositories;
 using Catalog.Host.Services;
 using Catalog.Host.Services.Interfaces;
+using Infrastructure;
 using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using AutoMapper;
 
 var configuration = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,31 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-builder.Services.AddControllers();
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = "http://localhost:7001";
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "catalogitem");
+    });
+});
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+})
+.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,12 +51,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.AllowAnyOrigin()
+    options.AddPolicy(
+        "CorsPolicy",
+        builder => builder
+            .SetIsOriginAllowed(host => true)
             .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
 
 builder.Services.Configure<CatalogConfigurations>(configuration);
@@ -49,16 +75,24 @@ builder.Services.AddTransient<ICatalogService<CatalogBrand>, CatalogBrandService
 builder.Services.AddTransient<IBffService, BffService>();
 
 
-
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseRouting();
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseCors("CorsPolicy");
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute().RequireAuthorization("ApiScope");
+    endpoints.MapControllers();//.RequireAuthorization -> for all controllers
+});
+
+//app.MapControllers();
 
 CreateDbIfNotExists(app);
 app.Run();

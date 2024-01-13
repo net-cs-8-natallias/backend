@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "http": {
+    "Catalog.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
@@ -13,3 +13,8 @@
     }
   }
 }
+
+
+
+
+

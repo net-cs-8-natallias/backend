@@ -11,8 +11,8 @@ public class BffService : IBffService
     private readonly ICatalogRepository<CatalogBrand> _brandRepository;
     private readonly IItemsCatalogRepository _itemRepository;
     private readonly ILogger<BffService> _logger;
-    private readonly ICatalogRepository<CatalogType> _typeRepository;
     private readonly IMapper _mapper;
+    private readonly ICatalogRepository<CatalogType> _typeRepository;
 
     public BffService(ILogger<BffService> logger,
         ICatalogRepository<CatalogBrand> brandRepository,
@@ -31,7 +31,7 @@ public class BffService : IBffService
     {
         var items = await _itemRepository.GetCatalog(pageSize, pageIndex, brand, type);
         _logger.LogDebug($"*{GetType().Name}* found {items.Count} items");
-        return new PaginatedItems<CatalogItem>()
+        return new PaginatedItems<CatalogItem>
         {
             Count = items.Count,
             Data = items.Data.Select(s => _mapper
@@ -40,28 +40,28 @@ public class BffService : IBffService
             PageSize = pageSize
         };
     }
-    
+
     public async Task<List<CatalogItem>> GetItems()
     {
         var items = await _itemRepository.GetCatalog();
         _logger.LogDebug($"*{GetType().Name}* found {items.Count} items");
         return items;
     }
-    
+
     public async Task<List<CatalogBrand>> GetBrands()
     {
         var brands = await _brandRepository.GetCatalog();
         _logger.LogDebug($"*{GetType().Name}* found {brands.Count} brands");
         return brands;
     }
-    
+
     public async Task<List<CatalogType>> GetTypes()
     {
         var types = await _typeRepository.GetCatalog();
         _logger.LogDebug($"*{GetType().Name}* found {types.Count} types");
         return types;
     }
-    
+
     public async Task<CatalogItem> GetItem(int id)
     {
         var item = await _itemRepository.FindById(id);

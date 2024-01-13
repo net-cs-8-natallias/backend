@@ -3,7 +3,6 @@ using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure;
 
@@ -20,7 +19,7 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
     {
         if (context.Exception is BusinessException ex)
         {
-            var problemDetails = new ValidationProblemDetails()
+            var problemDetails = new ValidationProblemDetails
             {
                 Instance = context.HttpContext.Request.Path,
                 Status = StatusCodes.Status400BadRequest,

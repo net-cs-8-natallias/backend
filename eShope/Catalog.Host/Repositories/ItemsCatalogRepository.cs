@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
-public class ItemsCatalogRepository : IItemsCatalogRepository 
+public class ItemsCatalogRepository : IItemsCatalogRepository
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<ItemsCatalogRepository> _logger;
@@ -24,15 +24,9 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
     public async Task<PaginatedItems<CatalogItem>> GetCatalog(int pageSize, int pageIndex, int brand, int type)
     {
         IQueryable<CatalogItem> query = _dbContext.CatalogItems;
-        if (brand > 0)
-        {
-            query = query.Where(w => w.CatalogBrandId == brand);
-        }
-        
-        if (type > 0)
-        {
-            query = query.Where(w => w.CatalogTypeId == type);
-        }
+        if (brand > 0) query = query.Where(w => w.CatalogBrandId == brand);
+
+        if (type > 0) query = query.Where(w => w.CatalogTypeId == type);
 
         var catalogItems = await query
             .OrderBy(c => c.Name)
@@ -41,9 +35,9 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        
+
         var totalItems = await query.LongCountAsync();
-        
+
         return new PaginatedItems<CatalogItem>
         {
             Count = totalItems,
@@ -66,7 +60,7 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
     public async Task<int?> AddToCatalog(CatalogItem catalogItem)
     {
         var brand = await FindBrand(catalogItem.CatalogBrandId);
-        var type =  await FindType(catalogItem.CatalogTypeId);
+        var type = await FindType(catalogItem.CatalogTypeId);
         var item = await _dbContext.CatalogItems.AddAsync(catalogItem);
         await _dbContext.SaveChangesAsync();
         return item.Entity.Id;
@@ -75,7 +69,7 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
     public async Task<CatalogItem> UpdateInCatalog(CatalogItem catalogItem)
     {
         var brand = await FindBrand(catalogItem.CatalogBrandId);
-        var type =  await FindType(catalogItem.CatalogTypeId);
+        var type = await FindType(catalogItem.CatalogTypeId);
         var item = await FindById(catalogItem.Id);
 
         item.CatalogBrandId = brand.Id;
@@ -87,30 +81,6 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
         item = _dbContext.CatalogItems.Update(item).Entity;
         await _dbContext.SaveChangesAsync();
         return item;
-    }
-
-    private async Task<CatalogBrand> FindBrand(int id)
-    {
-        var brand =  await _dbContext.CatalogBrands.FindAsync(id);
-        if (brand == null)
-        {
-            _logger.LogError($"*{GetType().Name}* brand with id: {id} does not exist");
-            throw new Exception($"Brand with ID: {id} does not exist");
-        }
-
-        return brand;
-    }
-    
-    private async Task<CatalogType> FindType(int id)
-    {
-        var type =  await _dbContext.CatalogTypes.FindAsync(id);
-        if (type == null)
-        {
-            _logger.LogError($"*{GetType().Name}* type with id: {id} does not exist");
-            throw new Exception($"Type with ID: {id} does not exist");
-        }
-
-        return type;
     }
 
     public async Task<CatalogItem> RemoveFromCatalog(int id)
@@ -135,5 +105,29 @@ public class ItemsCatalogRepository : IItemsCatalogRepository
             .Where(item => item.CatalogType!.Type == type)
             .ToListAsync();
         return items;
+    }
+
+    private async Task<CatalogBrand> FindBrand(int id)
+    {
+        var brand = await _dbContext.CatalogBrands.FindAsync(id);
+        if (brand == null)
+        {
+            _logger.LogError($"*{GetType().Name}* brand with id: {id} does not exist");
+            throw new Exception($"Brand with ID: {id} does not exist");
+        }
+
+        return brand;
+    }
+
+    private async Task<CatalogType> FindType(int id)
+    {
+        var type = await _dbContext.CatalogTypes.FindAsync(id);
+        if (type == null)
+        {
+            _logger.LogError($"*{GetType().Name}* type with id: {id} does not exist");
+            throw new Exception($"Type with ID: {id} does not exist");
+        }
+
+        return type;
     }
 }

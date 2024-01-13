@@ -26,8 +26,8 @@
 
 <div class="container">
     <div class="row">
-        <br />
-        @if(ViewBag.BasketInoperativeMsg != null)
+        <br/>
+        @if (ViewBag.BasketInoperativeMsg != null)
         {
             <div class="alert alert-warning" role="alert">
                 &nbsp;@ViewBag.BasketInoperativeMsg
@@ -37,18 +37,18 @@
 
     @if (Model.CatalogItems.Count() > 0)
     {
-        <partial name="_pagination" for="PaginationInfo" />
+        <partial name="_pagination" for="PaginationInfo"/>
 
         <div class="esh-catalog-items row">
             @foreach (var catalogItem in Model.CatalogItems)
             {
                 <div class="esh-catalog-item col-md-4">
-                    <partial name="_product" model="catalogItem" />
+                    <partial name="_product" model="catalogItem"/>
                 </div>
             }
         </div>
 
-        <partial name="_pagination" for="PaginationInfo" />
+        <partial name="_pagination" for="PaginationInfo"/>
     }
     else
     {

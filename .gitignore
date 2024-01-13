@@ -2,3 +2,4 @@ bin/
 obj/
 /eShope/Proxy/assest
 /eShope/MVC/wwwroot/images
+/eShope/IdentityServer/IdentityServer/keys

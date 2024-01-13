@@ -4,22 +4,24 @@ using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Services.Interfaces;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace Catalog.Host.Controllers;
 
+[Authorize(Policy = "ApiScope")]
 [ApiController]
 [Route(ComponentsDefaults.DefaultRoute)]
 public class CatalogBffController : ControllerBase
 {
+    private readonly IOptions<CatalogConfigurations> _config;
     private readonly ILogger<CatalogBffController> _logger;
     private readonly IBffService _service;
-    private readonly IOptions<CatalogConfigurations> _config;
 
     public CatalogBffController(
         ILogger<CatalogBffController> logger,
-        IBffService service, 
+        IBffService service,
         IOptions<CatalogConfigurations> config)
     {
         _logger = logger;
@@ -36,7 +38,7 @@ public class CatalogBffController : ControllerBase
         var catalogItems = await _service.GetItems(pageSize, pageIndex, brand, type);
         return Ok(catalogItems);
     }
-    
+
     [HttpGet("brands")]
     public async Task<ActionResult> Brands()
     {
@@ -44,7 +46,7 @@ public class CatalogBffController : ControllerBase
         var catalogBrands = await _service.GetBrands();
         return Ok(catalogBrands);
     }
-    
+
     [HttpGet("types")]
     public async Task<ActionResult> Types()
     {
@@ -76,7 +78,7 @@ public class CatalogBffController : ControllerBase
         var item = await _service.GetType(id);
         return Ok(item);
     }
-    
+
     [HttpGet("items/type")]
     public async Task<ActionResult> GetByType([FromQuery] string type)
     {
