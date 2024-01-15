@@ -6,33 +6,23 @@ namespace Basket.Host.Services;
 public class BasketService : IBasketService
 {
     private readonly ILogger<BasketService> _logger;
-    private readonly Dictionary<string, List<int>> _basket;
+    private readonly ICacheService _cacheService;
 
-    public BasketService(ILogger<BasketService> logger)
+    public BasketService(ILogger<BasketService> logger, 
+        ICacheService cacheService)
     {
-        _basket = new Dictionary<string, List<int>>();
         _logger = logger;
+        _cacheService = cacheService;
     }
     
-    public async Task AddItem(string userId, int itemId)
+    public async Task AddItemAsync(string userId, string data)
     {
-        if (_basket.ContainsKey(userId))
-        {
-            _basket[userId].Add(itemId);
-        }
-        else
-        {
-            _basket.Add(userId, new List<int>(){itemId});
-        }
+        await _cacheService.AddOrUpdateAsync(userId, data);
     }
 
-    public async Task<IEnumerable<int>> GetItems(string userId)
+    public async Task<TestGetResponse> GetItemsAsync(string userId)
     {
-        if (_basket.ContainsKey(userId))
-        {
-            return _basket[userId];
-        }
-
-        return new List<int>();
+        var result = await _cacheService.GetAsync<string>(userId);
+        return new TestGetResponse() { Data = result };
     }
 }

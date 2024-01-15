@@ -1,8 +1,15 @@
+using Basket.Host.Configuration;
 using Basket.Host.Services;
 using Basket.Host.Services.Interfaces;
+using Infrastructure.Extension;
+using Infrastructure.RateLimit.services;
+using Infrastructure.RateLimit.services.interfaces;
+using Infrastructure.Services;
+using Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 var configuration = GetConfiguration();
 
@@ -75,9 +82,6 @@ builder.Services.AddSwaggerGen(options =>
             }
         }
     });
-
-    
-    
 });
 
 builder.Services.AddAuthorization(options =>
@@ -87,11 +91,23 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("basket.basketitem", policy =>
         policy.RequireAssertion(context =>
             context.User.HasClaim(claim =>
-                (claim.Type == "scope" && claim.Value == "basket.basketitem") ||//"basketitem") ||
+                (claim.Type == "scope" && claim.Value == "basket.basketitem") ||
                 (claim.Type == "scope" && claim.Value == "mvc"))));
 });
 
 builder.Services.AddSingleton<IBasketService, BasketService>();
+
+builder.AddConfiguration();
+var redisConfig = builder.Configuration.GetSection("Redis");
+builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("Redis"));
+builder.Services.AddTransient<IBasketService, BasketService>();
+builder.Services.AddTransient<ICacheService, CacheService>();
+builder.Services.AddTransient<IRedisCacheConnectionService, RedisCacheConnectionService>();
+builder.Services.AddTransient<IJsonSerializer, JsonSerializer>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost:6379"));
+builder.Services.AddTransient<IFilterService, FilterService>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -120,6 +136,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<MiddlewareService>();
 
 app.UseEndpoints(endpoints =>
 {
@@ -131,10 +148,10 @@ app.Run();
 
 IConfiguration GetConfiguration()
 {
-    var builder = new ConfigurationBuilder()
+    var builderConfiguration = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 
-    return builder.Build();
+    return builderConfiguration.Build();
 }

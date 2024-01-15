@@ -8,12 +8,12 @@ services:
       dockerfile: Catalog.Host/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5002
+      - ASPNETCORE_URLS=http://+:5054
       - ConnectionString=server=host.docker.internal;port=5432;database=catalog;uid=postgres;password=Nataliia123;
     depends_on:
       - postgres
     ports:
-      - 5002:5002
+      - 5054:5054
   web.mvc:
     container_name: lde.web.mvc
     build:
@@ -21,12 +21,12 @@ services:
       dockerfile: MVC/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5001
-      - CatalogUrl=http://host.docker.internal:5002/api/v1/catalogbff
+      - ASPNETCORE_URLS=http://+:5018
+      - CatalogUrl=http://host.docker.internal:5054/api/v1/catalogbff
     depends_on:
       - catalog.api
     ports:
-      - 5001:5001
+      - 5018:5018
   nginx:
     image: nginx
     container_name: lde.nginx
@@ -53,6 +53,12 @@ services:
       POSTGRES_DB: catalog
     ports:
       - 5432:5432
+  redis:
+    image: redis
+    container_name: lde.redis
+    ports:
+      - 6379:6379
+      
 networks:
   default:
     driver: bridge
