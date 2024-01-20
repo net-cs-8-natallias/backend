@@ -8,28 +8,34 @@ public class CatalogItemEntityTypeConfiguration : IEntityTypeConfiguration<Catal
 {
     public void Configure(EntityTypeBuilder<CatalogItem> builder)
     {
-        builder.ToTable("CatalogItem");
-        //builder.HasKey(catalogItem => catalogItem.Id);
-        builder.Property(catalogItem => catalogItem.Id)
-            .UseHiLo("catalog_item_hilo")
+        builder.ToTable("catalogitem");
+   
+        builder.Property(catalogItem => catalogItem.Id).HasColumnName("id")
             .IsRequired();
 
-        builder.Property(catalogItem => catalogItem.Name)
+        builder.Property(catalogItem => catalogItem.Name).HasColumnName("name")
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(catalogItem => catalogItem.Price)
+        builder.Property(catalogItem => catalogItem.Price).HasColumnName("price")
             .IsRequired();
 
-        builder.Property(catalogItem => catalogItem.PictureFileName)
+        builder.Property(catalogItem => catalogItem.PictureFileName).HasColumnName("picturefilename")
+            .IsRequired(false);
+
+        builder.Property(item => item.AvailableStock).HasColumnName("availablestock");
+
+        builder.Property(item => item.Description).HasColumnName("description")
             .IsRequired(false);
 
         builder.HasOne(catalogItem => catalogItem.CatalogBrand)
             .WithMany()
             .HasForeignKey(catalogItem => catalogItem.CatalogBrandId);
+        builder.Property(item => item.CatalogBrandId).HasColumnName("catalogbrandid");
 
         builder.HasOne(catalogItem => catalogItem.CatalogType)
             .WithMany()
             .HasForeignKey(catalogItem => catalogItem.CatalogTypeId);
+        builder.Property(item => item.CatalogTypeId).HasColumnName("catalogtypeid");
     }
 }

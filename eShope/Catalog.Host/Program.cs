@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Catalog.Host.Configurations;
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
@@ -9,6 +10,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 var configuration = GetConfiguration();
@@ -17,6 +19,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .WriteTo.Console()
     .CreateLogger();
+
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -28,6 +31,49 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = false
         };
     });
+
+
+
+ builder.Services.AddSwaggerGen(options =>
+ {
+     options.SwaggerDoc("v1", new OpenApiInfo
+     {
+         Title = "eShop- Catalog HTTP API",
+         Version = "v1",
+         Description = "The Catalog Service HTTP API"
+     });
+     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+     {
+         {
+             new OpenApiSecurityScheme
+             {
+                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+             },
+             new[] { "basket.item", "mvc", "order.orderitem", "ApiScope" }
+         }
+     });
+      options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+      {
+          Type = SecuritySchemeType.OAuth2,
+          Flows = new OpenApiOAuthFlows()
+          {
+              Implicit = new OpenApiOAuthFlow()
+              {
+                  AuthorizationUrl = new Uri("http://localhost:7001/connect/authorize"),
+                  TokenUrl = new Uri("http://localhost:7001/connect/token"),
+                  Scopes = new Dictionary<string, string>()
+                  {
+                      { "mvc", "web" },
+                      { "catalog.catalogitem", "catalog" },
+                      { "order.orderitem", "order" }
+                  }
+              }
+          }
+      }
+     );
+
+     options.OperationFilter<AuthorizeCheckOperationFilter>();
+});
 
 builder.Services.AddAuthorization(options =>
 {

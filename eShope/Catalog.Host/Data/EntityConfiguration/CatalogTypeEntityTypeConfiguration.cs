@@ -8,17 +8,13 @@ public class CatalogTypeEntityTypeConfiguration : IEntityTypeConfiguration<Catal
 {
     public void Configure(EntityTypeBuilder<CatalogType> builder)
     {
-        builder.ToTable("CatalogType");
+        builder.ToTable("catalogtype");
         builder.HasKey(catalogType => catalogType.Id);
-        builder.Property(catalogType => catalogType.Id)
-            .UseHiLo("catalog_type_hilo")
+        builder.Property(catalogType => catalogType.Id).HasColumnName("id")
             .IsRequired();
 
-        builder.Property(catalogType => catalogType.Type)
+        builder.Property(catalogType => catalogType.Type).HasColumnName("type")
             .IsRequired()
             .HasMaxLength(50);
-        // builder.Property(catalogBrand => catalogBrand.Type)
-        //     .IsRequired()
-        //     .HasMaxLength(50);
     }
 }
