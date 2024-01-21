@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "IdentityS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.RateLimit", "Infrastructure.RateLimit\Infrastructure.RateLimit.csproj", "{93764356-83CA-4042-98DA-A69A8EB8DC47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.Host", "Order.Host\Order.Host.csproj", "{4CE551CF-B039-49F2-A691-7F34EAA1966A}"
+EndProject
 
 
 Global
@@ -86,5 +88,9 @@ Global
 		{93764356-83CA-4042-98DA-A69A8EB8DC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93764356-83CA-4042-98DA-A69A8EB8DC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93764356-83CA-4042-98DA-A69A8EB8DC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CE551CF-B039-49F2-A691-7F34EAA1966A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CE551CF-B039-49F2-A691-7F34EAA1966A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CE551CF-B039-49F2-A691-7F34EAA1966A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CE551CF-B039-49F2-A691-7F34EAA1966A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

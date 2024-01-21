@@ -21,7 +21,7 @@ var identityUrl = configuration.GetValue<string>("IdentityUrl");
 var callBackUrl = configuration.GetValue<string>("CallBackUrl");
 var redirectUrl = configuration.GetValue<string>("RedirectUri");
 
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = OpenIdConnectDefaults.AuthenticationScheme;

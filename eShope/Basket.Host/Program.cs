@@ -64,7 +64,7 @@ builder.Services.AddSwaggerGen(options =>
             new[] { "basket.item", "mvc" }
         }
     });
-    var authority = configuration["Authorization:Authority"];
+
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.OAuth2,
